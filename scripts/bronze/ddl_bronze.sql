@@ -6,6 +6,7 @@ Script Purpose:
     This script creates tables in the 'brone' schema, dropping existing tables. 
     If they already exist. 
    Run this script to re-define the DDL structure of 'brone' tables.
+  'U' denotes the user has defined the tables under the schema.
 */
 
 if object_id ('bronze.crm_cust_info' , 'U') is not null
