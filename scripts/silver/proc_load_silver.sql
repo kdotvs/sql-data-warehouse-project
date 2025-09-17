@@ -1,5 +1,20 @@
+/*
+=============================================================
+Stored Procedure: Load Silver Layer (Source -> Bronze)
+=============================================================
+Script Purpose:
+    This stored procedure loads data into the 'Silver' schema from external CSV files. 
+    It performs the following actions:
+	- Truncates the bronze tables before loading data.
+	- Uses the 'BULK INSERT' command to load data from csv files to bronze tables.
 
-exec silver.load_silver
+Parameters:
+	None.
+  This stored procedure does not accept any parameters or return any values.
+
+Usage Example:
+	exec silver.load_silver;
+*/
 
 create or alter procedure silver.load_silver as
 
@@ -13,9 +28,7 @@ begin
 		
 		set @start_time = GETDATE();
 		print '>> Table 1: Truncation table: Silver.crm_cust_info';
-
 		truncate table Silver.crm_cust_info;
-
 		print '>> Table 1: Inserting data into: Silver.crm_cust_info';
 
 		insert into silver.crm_cust_info (
@@ -49,15 +62,14 @@ begin
 			FROM [datawarehouse].[bronze].[crm_cust_info]
 			where cst_id is not null
 		)t where flag_last = 1
+			
 		set @end_time = GETDATE();
 		print '>> Load Duration: ' + cast(datediff(second, @start_time, @end_time) as nvarchar) + ' seconds';
 		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
 
 		set @start_time = GETDATE()
 		print '>> Table 2: Truncation table: silver.crm_prd_info';
-
 		truncate table silver.crm_prd_info;
-
 		print '>> Table 2: Inserting data into: Silver.crm_prd_info';
 
 		insert into silver.crm_prd_info(
@@ -89,15 +101,14 @@ begin
 			as date
 			) as prd_end_dt -- Calcualte end date as one day before the next start date
 		FROM [datawarehouse].bronze.crm_prd_info;
+
 		set @end_time = GETDATE();
 		print '>> Load Duration: ' + cast(datediff(second, @start_time, @end_time) as nvarchar) + ' seconds';
 		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
 
 		set @start_time = GETDATE();
 		print '>> Table 3: Truncation table: silver.crm_sales_details';
-
 		truncate table silver.crm_sales_details;
-
 		print '>>Table 3: Inserting data into: silver.crm_sales_details';
 
 		insert into silver.crm_sales_details (
@@ -140,15 +151,14 @@ begin
 				else sls_price
 			end as sls_price
 		from bronze.crm_sales_details;
+
 		set @end_time = GETDATE();
 		print '>> Load Duration: ' + cast(datediff(second, @start_time, @end_time) as nvarchar) + ' seconds';
 		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
 
 		set @start_time = GETDATE();
 		print '>> Table 4: Truncation table: Silver.erp_cust_az12';
-
 		truncate table Silver.erp_cust_az12;
-
 		print '>>Table 4: Inserting data into: Silver.erp_cust_az12';
 
 		insert into silver.erp_cust_az12 (
@@ -172,16 +182,14 @@ begin
 				else 'n/a'
 			end as gen
 		from bronze.erp_cust_az12;
+
 		set @end_time = GETDATE();
 		print '>> Load Duration: ' + cast(datediff(second, @start_time, @end_time) as nvarchar) + ' seconds';
 		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
 
-
 		set @start_time = GETDATE();
 		print '>> Table 5: Truncation table: Silver.erp_loc_a101';
-
 		truncate table Silver.erp_loc_a101;
-
 		print '>>Table 5: Inserting data into: Silver.erp_loc_a101';
 
 		insert into silver.erp_loc_a101
@@ -197,15 +205,14 @@ begin
 			else TRIM(cntry)
 		end as cntry
 		from bronze.erp_loc_a101;
+
 		set @end_time = GETDATE();
 		print '>> Load Duration: ' + cast(datediff(second, @start_time, @end_time) as nvarchar) + ' seconds';
 		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
 
 		set @start_time = GETDATE();
 		print '>> Table 6: Truncation table: Silver.erp_px_cat_g1v2';
-
 		truncate table Silver.erp_px_cat_g1v2;
-
 		print '>>table 6: Inserting data into: Silver.erp_px_cat_g1v2';
 
 		insert into silver.erp_px_cat_g1v2 
@@ -221,6 +228,7 @@ begin
 		subcat,
 		maintenance
 		from bronze.erp_px_cat_g1v2;
+
 		set @end_time = GETDATE();
 		print '>> Load Duration: ' + cast(datediff(second, @start_time, @end_time) as nvarchar) + ' seconds';
 		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
